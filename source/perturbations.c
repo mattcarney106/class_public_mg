@@ -6283,13 +6283,27 @@ int perturbations_einstein(
     /* newtonian gauge */
     if (ppt->gauge == newtonian) {
 
-      if (ppt->modified_gravity) {
+      if (ppt->mg_parameterization == mu_gamma_bz) {
         /* If using a modified theory of gravity, use the modified evolution + anisotropy equations
            to compute the metric potentials. Note: currently only supported for scalar perturbations
            in the Newtonian gauge.
         */
 
-        // FIXME: Need to replace placeholders for mg_mu, mg_gamma.
+        // FIXME: This will get really messy after a few parameterizations are added.
+        /* Calculate mu and gamma for given a, k. */
+        double beta1, beta2, lambda1, lambda2, ss;
+        double mg_mu, mg_gamma;
+
+        beta1 = ppt->beta1;
+        beta2 = ppt->beta2;
+        lambda1 = ppt->lambda1;
+        lambda2 = ppt->lambda2;
+        ss = ppt->ss;
+
+        // FIXME: Might be nice to store these somewhere to make sure they are properly calculated.
+        mg_mu = (1.0 + beta1 * lambda1*lambda1 * k2 * pow(a,ss)) / (1 + lambda1*lambda1 * k2 * pow(a,ss));
+        mg_gamma = (1.0 + beta2 * lambda2*lambda2 * k2 * pow(a,ss)) / (1 + lambda2*lambda2 * k2 * pow(a,ss));
+
         /* Modified equation for psi */
         ppw->pvecmetric[ppw->index_mt_psi] = y[ppw->pv->index_pt_phi]/mg_gamma - mg_mu/mg_gamma * 4.5 * (a2/k2) * ppw->rho_plus_p_shear;
 
