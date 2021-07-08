@@ -1949,7 +1949,7 @@ int input_read_parameters_general(struct file_content * pfc,
   }
 
   /** 4.5 Modifications to gravity **/
-  class_call(parser_read_string(pfc,"modified gravity",&string1,&flag1,errmsg)
+  class_call(parser_read_string(pfc,"modified gravity",&string1,&flag1,errmsg),
              errmsg,
              errmsg);
   if(flag1 == _TRUE_){
@@ -1958,7 +1958,7 @@ int input_read_parameters_general(struct file_content * pfc,
     if (strstr(string1,"mu-gamma") != NULL || strstr(string1,"mu_gamma") != NULL){
 
       /* Read in which mu-gamma parameterization was specified */
-      class_call(parser_read_string("mu-gamma_parameterization",&string1,&flag1,errmsg),
+      class_call(parser_read_string(pfc,"mu-gamma_parameterization",&string1,&flag1,errmsg),
                  errmsg,
                  errmsg);
       if (flag1 == _TRUE_){
@@ -1977,11 +1977,11 @@ int input_read_parameters_general(struct file_content * pfc,
     switch(ppt->mg_parameterization) {
       case mu_gamma_bz:
         /* Read */
-        class_call(parser_read_double(pfc,"lambda1",ppt->lambda1));
-        class_call(parser_read_double(pfc,"beta1",ppt->beta1));
-        class_call(parser_read_double(pfc,"lambda2",ppt->lambda2));
-        class_call(parser_read_double(pfc,"beta2",ppt->beta2));
-        class_call(parser_read_double(pfc,"ss",ppt->ss));
+        class_read_double("lambda1",ppt->lambda1);
+        class_read_double("beta1",ppt->beta1);
+        class_read_double("lambda2",ppt->lambda2);
+        class_read_double("beta2",ppt->beta2);
+        class_read_double("ss",ppt->ss);
         break;
       default:
         class_stop(ppt->error_message,"ppt->mg_parameterization %s different from all known cases",ppt->mg_parameterization);
