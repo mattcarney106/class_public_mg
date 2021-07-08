@@ -62,6 +62,16 @@ enum possible_gauges {
 
 //@}
 
+/**
+ * List of modified gravity parameterizations.
+**/
+
+//@{
+
+enum possible_mg_parameterizations {mu_gamma_bz, mg_none};
+
+//@}
+
 //@{
 
 /**
@@ -193,6 +203,26 @@ struct perturbations
   //@{
 
   enum possible_gauges gauge; /**< gauge in which to perform this calculation */
+
+  //@}
+
+  /** @name - parameterization of modified gravity used **/
+
+  //@{
+
+  enum possible_mg_parameterizations mg_parameterization;
+
+  //@}
+
+  /** @name - arameters for mu_gamma_bz parameterization **/
+
+  //@{
+
+  double lambda1;
+  double beta1;
+  double lambda2;
+  double beta2;
+  double ss;
 
   //@}
 

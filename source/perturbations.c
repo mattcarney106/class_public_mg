@@ -6283,39 +6283,56 @@ int perturbations_einstein(
     /* newtonian gauge */
     if (ppt->gauge == newtonian) {
 
-      /* in principle we could get phi from the constrain equation:
+      if (ppt->modified_gravity) {
+        /* If using a modified theory of gravity, use the modified evolution + anisotropy equations
+           to compute the metric potentials. Note: currently only supported for scalar perturbations
+           in the Newtonian gauge.
+        */
 
-         ppw->pvecmetric[ppw->index_mt_phi] = -1.5 * (a2/k2/k2/s2/s2) * (k2 * delta_rho + 3.*a_prime_over_a * rho_plus_p_theta);
+        // FIXME: Need to replace placeholders for mg_mu, mg_gamma.
+        /* Modified equation for psi */
+        ppw->pvecmetric[ppw->index_mt_psi] = y[ppw->pv->index_pt_phi]/mg_gamma - mg_mu/mg_gamma * 4.5 * (a2/k2) * ppw->rho_plus_p_shear;
 
-         with s2_squared = sqrt(1-3K/k2) = ppw->s_l[2]*ppw->s_l[2]
-
-         This was the case in class v1.3. However the integration is
-         more stable is we treat phi as a dynamical variable
-         y[ppw->pv->index_pt_phi], which derivative is given by the
-         second equation below (credits to Guido Walter Pettinari). */
-
-      /* equation for psi */
-      ppw->pvecmetric[ppw->index_mt_psi] = y[ppw->pv->index_pt_phi] - 4.5 * (a2/k2) * ppw->rho_plus_p_shear;
-
-      /* equation for phi' */
-      ppw->pvecmetric[ppw->index_mt_phi_prime] = -a_prime_over_a * ppw->pvecmetric[ppw->index_mt_psi] + 1.5 * (a2/k2) * ppw->rho_plus_p_theta;
-
-      /* eventually, infer radiation streaming approximation for
-         gamma and ur (this is exactly the right place to do it
-         because the result depends on h_prime) */
-
-      if (ppw->approx[ppw->index_ap_rsa] == (int)rsa_on) {
-
-        class_call(perturbations_rsa_delta_and_theta(ppr,pba,pth,ppt,k,y,a_prime_over_a,ppw->pvecthermo,ppw,ppt->error_message),
-                   ppt->error_message,
-                   ppt->error_message);
+        /* Modified equation for phi' */
+        ppw->pvecmetric[ppw->index_mt_phi_prime] = -mg_gamma * a_prime_over_a * ppw->pvecmetric[ppw->index_mt_psi] + 1.5 * mg_mu * (a2/k2) * ppw->rho_plus_p_theta;
       }
 
-      if ((pba->has_idr)&&(ppw->approx[ppw->index_ap_rsa_idr] == (int)rsa_idr_on)){
 
-        class_call(perturbations_rsa_idr_delta_and_theta(ppr,pba,pth,ppt,k,y,a_prime_over_a,ppw->pvecthermo,ppw,ppt->error_message),
-                   ppt->error_message,
-                   ppt->error_message);
+      else {
+        /* in principle we could get phi from the constrain equation:
+
+           ppw->pvecmetric[ppw->index_mt_phi] = -1.5 * (a2/k2/k2/s2/s2) * (k2 * delta_rho + 3.*a_prime_over_a * rho_plus_p_theta);
+
+           with s2_squared = sqrt(1-3K/k2) = ppw->s_l[2]*ppw->s_l[2]
+
+           This was the case in class v1.3. However the integration is
+           more stable is we treat phi as a dynamical variable
+           y[ppw->pv->index_pt_phi], which derivative is given by the
+           second equation below (credits to Guido Walter Pettinari). */
+
+        /* equation for psi */
+        ppw->pvecmetric[ppw->index_mt_psi] = y[ppw->pv->index_pt_phi] - 4.5 * (a2/k2) * ppw->rho_plus_p_shear;
+
+        /* equation for phi' */
+        ppw->pvecmetric[ppw->index_mt_phi_prime] = -a_prime_over_a * ppw->pvecmetric[ppw->index_mt_psi] + 1.5 * (a2/k2) * ppw->rho_plus_p_theta;
+
+        /* eventually, infer radiation streaming approximation for
+           gamma and ur (this is exactly the right place to do it
+           because the result depends on h_prime) */
+
+        if (ppw->approx[ppw->index_ap_rsa] == (int)rsa_on) {
+
+          class_call(perturbations_rsa_delta_and_theta(ppr,pba,pth,ppt,k,y,a_prime_over_a,ppw->pvecthermo,ppw,ppt->error_message),
+                     ppt->error_message,
+                     ppt->error_message);
+        }
+
+        if ((pba->has_idr)&&(ppw->approx[ppw->index_ap_rsa_idr] == (int)rsa_idr_on)){
+
+          class_call(perturbations_rsa_idr_delta_and_theta(ppr,pba,pth,ppt,k,y,a_prime_over_a,ppw->pvecthermo,ppw,ppt->error_message),
+                     ppt->error_message,
+                     ppt->error_message);
+        }
       }
 
     }

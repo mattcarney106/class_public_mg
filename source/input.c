@@ -1616,6 +1616,7 @@ int input_read_parameters_general(struct file_content * pfc,
   char * options_number_count[8] = {"density","dens","rsd","RSD","lensing","lens","gr","GR"};
   char * options_modes[6] = {"s","v","t","S","V","T"};
   char * options_ics[10] = {"ad","bi","cdi","nid","niv","AD","BI","CDI","NID","NIV"};
+  char * options_mod_gravity[] = {};
 
   /* Set local default values */
   ppt->has_perturbations = _FALSE_;
@@ -1945,6 +1946,46 @@ int input_read_parameters_general(struct file_content * pfc,
     /* Read */
     class_read_flag_or_deprecated("nbody_gauge_transfer_functions","Nbody gauge transfer functions",ppt->has_Nbody_gauge_transfers);
 
+  }
+
+  /** 4.5 Modifications to gravity **/
+  class_call(parser_read_string(pfc,"modified gravity",&string1,&flag1,errmsg)
+             errmsg,
+             errmsg);
+  if(flag1 == _TRUE_){
+
+    /* First look for mu-gamma parameterization */
+    if (strstr(string1,"mu-gamma") != NULL || strstr(string1,"mu_gamma") != NULL){
+
+      /* Read in which mu-gamma parameterization was specified */
+      class_call(parser_read_string("mu-gamma_parameterization",&string1,&flag1,errmsg),
+                 errmsg,
+                 errmsg);
+      if (flag1 == _TRUE_){
+        if (strstr(string1,"BZ") != NULL || strstr(string1,"bz") != NULL)
+        {
+          ppt->mg_parameterization = mu_gamma_bz;
+        }
+        else {
+          class_stop(ppt->error_message,"Unrecognized mu-gamma parameterization.");
+        }
+      }
+
+    }
+
+    /* Read in the corresponding parameters*/
+    switch(ppt->mg_parameterization) {
+      case mu_gamma_bz:
+        /* Read */
+        class_call(parser_read_double(pfc,"lambda1",ppt->lambda1));
+        class_call(parser_read_double(pfc,"beta1",ppt->beta1));
+        class_call(parser_read_double(pfc,"lambda2",ppt->lambda2));
+        class_call(parser_read_double(pfc,"beta2",ppt->beta2));
+        class_call(parser_read_double(pfc,"ss",ppt->ss));
+        break;
+      default:
+        class_stop(ppt->error_message,"ppt->mg_parameterization %s different from all known cases",ppt->mg_parameterization);
+    }
   }
 
   /** 5) h in [-] and H_0/c in [1/Mpc = h/2997.9 = h*10^5/c] */
