@@ -5253,6 +5253,13 @@ int input_default_params(struct background *pba,
   /** 4.b) N-body gauge */
   ppt->has_Nbody_gauge_transfers = _FALSE_;
 
+  /** 4.5 Modifications to gravity **/
+  ppt->lambda2 = sqrt(exp(3.));
+  ppt->lambda1 = sqrt(exp(3.)/(4./3.));
+  ppt->beta1 = 4./3.;
+  ppt->beta2 = 1./2.;
+  ppt->ss = 4.;
+
   /** 5) Hubble parameter */
   pba->h = 0.67810;
   pba->H0 = pba->h*1.e5/_c_;
