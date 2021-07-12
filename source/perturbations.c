@@ -6301,8 +6301,11 @@ int perturbations_einstein(
         ss = ppt->ss;
 
         // FIXME: Might be nice to store these somewhere to make sure they are properly calculated.
-        mg_mu = (1.0 + beta1 * lambda1*lambda1 * k2 * pow(a,ss)) / (1 + lambda1*lambda1 * k2 * pow(a,ss));
-        mg_gamma = (1.0 + beta2 * lambda2*lambda2 * k2 * pow(a,ss)) / (1 + lambda2*lambda2 * k2 * pow(a,ss));
+        mg_mu = (1.0 + beta1 * lambda1*lambda1 * k2 * pow(a,ss)) / (1. + lambda1*lambda1 * k2 * pow(a,ss));
+        mg_gamma = (1.0 + beta2 * lambda2*lambda2 * k2 * pow(a,ss)) / (1. + lambda2*lambda2 * k2 * pow(a,ss));
+
+        printf("MG_MU is %lf\n", mg_mu);
+        printf("MG_GAMMA is %lf\n", mg_gamma);
 
         /* Modified equation for psi */
         ppw->pvecmetric[ppw->index_mt_psi] = y[ppw->pv->index_pt_phi]/mg_gamma - mg_mu/mg_gamma * 4.5 * (a2/k2) * ppw->rho_plus_p_shear;
