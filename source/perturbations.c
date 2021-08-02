@@ -6312,8 +6312,13 @@ int perturbations_einstein(
 	*/
 
         /* Modified equation for psi */
-        ppw->pvecmetric[ppw->index_mt_psi] = y[ppw->pv->index_pt_phi] / mg_gamma - mg_mu * 4.5 * (a2/k2) * ppw->rho_plus_p_shear;
+        ppw->pvecmetric[ppw->index_mt_psi] = -1.5 * mg_mu * (a2/k2) * (ppw->delta_rho + 3 * (a_prime_over_a / k) * ppw->rho_plus_p_theta + 3 * (ppw->rho_plus_p_shear));
 
+
+        /* Modified equation for phi */
+        ppw->pvecmetric[ppw->index_mt_phi] = y[ppw->pv->index_pt_psi] * mg_gamma + mg_mu * 4.5 * (a2/k2) * ppw->rho_plus_p_shear;
+
+        
         /* Modified equation for phi' */
         ppw->pvecmetric[ppw->index_mt_phi_prime] = - mg_gamma * a_prime_over_a * ppw->pvecmetric[ppw->index_mt_psi] + 1.5 * mg_mu * (a2/k2) * ppw->rho_plus_p_theta;
       }
